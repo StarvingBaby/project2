@@ -5,57 +5,85 @@
 #include <deque>
 using namespace std;
 
+vector<int> sprockets;
+
+int robotomaton(int p, int i) {
+    cout << sprockets[i] << "";
+    if (p == 0) {
+        return sprockets[i];
+    }
+    cout << " + ";
+    return sprockets[i] + robotomaton(p - 1, i - 1);
+}
+
+int omnidroid() {
+    return 0;
+}
+
 int main() {
     ifstream robotText;
-    robotText.open("input.txt");
-    deque<string> fileText;
-    vector<int> sprockets;
-    vector<int> prev;
+    vector<int> previous;
+    int numRobots;
     int s;
     int p;
+    int n;
+    int m;
+    string operation = "";
+    int stages;
+    robotText.open("input.txt");
     if (robotText.is_open()) {
-        while (robotText) {
-            string d;
-            getline(robotText, d);
-            fileText.push_back(d);
-        }
-        fileText.pop_back();
-    }
-    string operation = fileText[0];
-    fileText.pop_front();
-    int newLine = fileText[0].find("\n");
-    int stages = stoi(fileText[0]);
-    fileText.pop_front();
-    for (auto x : fileText) {
-        int whitespace = x.find(" ");
-        int n = x.length();
-        s = stoi(x.substr(0, whitespace));
-        p = stoi(x.substr(whitespace, n-1));
-        sprockets.push_back(s);
-        prev.push_back(p);
-    }
-
-
-
-    int sum = 0;
-    if (operation == "robotomaton") {
-        for (auto x : sprockets) {
-            cout<<x<<' ';
-        }
-        cout<<'\n';
-        for (auto x : prev) {
-            cout<<x<<' ';
-        }
-        cout<<"\n\n";
-        for(int i = 0; i < stages; i++){
-            if(prev[i] > 0){
-                sum += sprockets[i - prev[i]];
+        string tmp;
+        getline(robotText, tmp);
+        numRobots = stoi(tmp);
+        for (int i = 0; i < numRobots; i++) {
+            getline(robotText, operation);
+            while (operation == "") {
+                getline(robotText, operation);
             }
-            sum += sprockets[i];
+            if (operation[0] == 'r') {
+                getline(robotText, tmp);
+                stages = stoi(tmp);
+                string sp;
+                for (int i = 0; i < stages; i++) {
+                    getline(robotText, sp);
+                    sscanf(sp.c_str(), "%d %d", &s, &p);
+                    sprockets.push_back(s);
+                    previous.push_back(p);
+                }
+                for (int i = 0; i < stages; i++) {
+                    if (previous[i] == 0) {
+                        cout << "prev = " << previous[i] << "   i = " << i << " --->  " << " = " << sprockets[i] << '\n';
+                        sprockets[i] = sprockets[i];
+                    }
+                    else {
+                        cout << "prev = " << previous[i] << "   i = " << i << " --->  ";
+                        sprockets[i] = robotomaton(previous[i], i);
+                        cout << " = " << sprockets[i] << '\n';
+                    }
+                }
+                cout << sprockets[stages - 1] << '\n';
+            }
+            else if (operation[0] == 'o') {
+                string nm, tmp;
+                int x, y;
+                getline(robotText, nm);
+                cout << nm << '\n';
+                sscanf(nm.c_str(), "%d %d", &n, &m);
+                for (int i = 0; i < m; i++) {
+                    getline(robotText, tmp);
+                    cout << tmp << '\n';
+                    sscanf(tmp.c_str(), "%d %d", &x, &y);
+                    // use x and y to load arrays
+                }
+                for (int i = 0; i < n; i++) {
+                    getline(robotText, tmp);
+                    cout << tmp << '\n';
+                    sscanf(tmp.c_str(), "%d", &x);
+                    // use x to load sprockets array
+                }
+                continue;
+            }
         }
-        cout<<sum<<'\n';
-    }
-    else if (operation == "omnidroid") {
-        cout << "omnidroid";
+        robotText.close();
     }
 }
