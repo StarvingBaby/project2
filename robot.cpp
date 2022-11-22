@@ -18,22 +18,16 @@ int MemoRobot(int t, vector<int> roboMemoArr)
     if (roboMemoArr[t - 1] == -1)
     {
         int sum = sprocket[t - 1];
-        cout << "P: " << sum << endl;
         if (prevs[t - 1] == 0)
             roboMemoArr[t - 1] = sum;
 
         for (int i = 1; i <= prevs[t - 1]; i++){
             sum += MemoRobot(t - i, roboMemoArr);
-            cout << "sum : " << sum << endl;
         }
             
 
         roboMemoArr[t - 1] = sum;
     }
-    for(auto x : roboMemoArr){
-        cout << x << " ";
-    }
-    cout << endl;
     return roboMemoArr[t - 1];
 }
 
@@ -196,4 +190,5 @@ int main()
     }
 
     inputFile.close();
+    outputFile.close();
 }
