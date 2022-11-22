@@ -12,24 +12,46 @@ vector<int> sprocket;
 vector<int> prevs;
 map <int, vector<int>> req;
 
-//Memoized robotomaton construction algorithm
-int MemoRobot(int t, vector<int> roboMemoArr)
-{
-    if (roboMemoArr[t - 1] == -1)
-    {
-        int sum = sprocket[t - 1];
-        if (prevs[t - 1] == 0)
-            roboMemoArr[t - 1] = sum;
+vector<int> tot;
+vector<int> new_sprocket;
 
-        for (int i = 1; i <= prevs[t - 1]; i++){
-            sum += MemoRobot(t - i, roboMemoArr);
+//Iterative robotomaton construction algorithm
+int IterRobot(int t)
+{
+    tot.push_back(sprocket[0]);
+    new_sprocket.push_back(sprocket[0]);
+
+    for(int i=1; i<t; i++){
+        if(prevs[i]==0){
+            new_sprocket.push_back(sprocket[i]);
         }
+        else{
+            new_sprocket.push_back(tot[i-1]+sprocket[i]-tot[i-prevs[i]-1]);
+        }
+        tot.push_back(tot[i-1]+new_sprocket[i]);
+    }
+    return new_sprocket[t-1];
+}
+
+
+// //Memoized robotomaton construction algorithm
+// int MemoRobot(int t, vector<int> roboMemoArr)
+// {
+//     if (roboMemoArr[t - 1] == -1)
+//     {
+//         int sum = sprocket[t - 1];
+//         if (prevs[t - 1] == 0)
+//             roboMemoArr[t - 1] = sum;
+
+//         for (int i = 1; i <= prevs[t - 1]; i++){
+//             sum += MemoRobot(t - i, roboMemoArr);
+//         }
             
 
-        roboMemoArr[t - 1] = sum;
-    }
-    return roboMemoArr[t - 1];
-}
+//         roboMemoArr[t - 1] = sum;
+//     }
+//     return roboMemoArr[t - 1];
+// }
 
 //Memoized omnidroid construction algorithm
 int MemoOmni(int t, vector<int> omniMemoArr)
@@ -44,7 +66,7 @@ int MemoOmni(int t, vector<int> omniMemoArr)
         else
         {
             sum = sprocket[t];
-            for (int i = 0; i < (req.find(t)->second).size(); i++)
+            for (int i = 0; i < (int)(req.find(t)->second).size(); i++)
             {
                 sum = sum + MemoOmni((req.find(t)->second)[i], omniMemoArr);
             }
@@ -73,7 +95,7 @@ vector<int> readNum(string read)
     for (i = 0; (read.at(i) != ' '); i++)
         num1.append(1, read.at(i));
 
-    for (i = i + 1; i < read.length(); i++)
+    for (i = i + 1; i < (int)read.length(); i++)
         num2 += getString(read.at(i));
 
     out.push_back(stoi(num1));
@@ -179,12 +201,17 @@ int main()
                     prevs.push_back(p);
                 }
 
+                outputFile << IterRobot(n) <<endl;
+
+/*    Memorizatio  Version   */
+/* 
                 //Run the memoized omnidroid algorithm
                 vector<int> robotMemoArr;
                 for (int i = 0; i < n; i++)
                     robotMemoArr.push_back(-1);
 
-                outputFile << MemoRobot(n, robotMemoArr) << endl;
+                outputFile << IterRobot(n, robotMemoArr) << endl;
+*/
             }
         }
     }
