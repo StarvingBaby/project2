@@ -10,14 +10,18 @@ int m;
 
 vector<int> sprocket;
 vector<int> prevs;
-map <int, vector<int>> req;
 
+map <int, vector<int>> req;
+    
 vector<int> tot;
 vector<int> new_sprocket;
 
 //Iterative robotomaton construction algorithm
 int IterRobot(int t)
 {
+    tot.clear(); 
+    new_sprocket.clear();
+    
     tot.push_back(sprocket[0]);
     new_sprocket.push_back(sprocket[0]);
 
@@ -26,32 +30,20 @@ int IterRobot(int t)
             new_sprocket.push_back(sprocket[i]);
         }
         else{
-            new_sprocket.push_back(tot[i-1]+sprocket[i]-tot[i-prevs[i]-1]);
+            if(i-prevs[i] == 0){
+                new_sprocket.push_back(tot[i-1]+sprocket[i]);
+            }
+            else{
+                new_sprocket.push_back(tot[i-1]+sprocket[i]-tot[i-prevs[i]-1]);
+            }
         }
-        tot.push_back(tot[i-1]+new_sprocket[i]);
+        
+        int a = tot[i-1]+new_sprocket[i];
+        tot.push_back(a);
     }
+
     return new_sprocket[t-1];
 }
-
-
-// //Memoized robotomaton construction algorithm
-// int MemoRobot(int t, vector<int> roboMemoArr)
-// {
-//     if (roboMemoArr[t - 1] == -1)
-//     {
-//         int sum = sprocket[t - 1];
-//         if (prevs[t - 1] == 0)
-//             roboMemoArr[t - 1] = sum;
-
-//         for (int i = 1; i <= prevs[t - 1]; i++){
-//             sum += MemoRobot(t - i, roboMemoArr);
-//         }
-            
-
-//         roboMemoArr[t - 1] = sum;
-//     }
-//     return roboMemoArr[t - 1];
-// }
 
 //Memoized omnidroid construction algorithm
 int MemoOmni(int t, vector<int> omniMemoArr)
@@ -200,18 +192,9 @@ int main()
                     sprocket.push_back(s);
                     prevs.push_back(p);
                 }
+                int ans = IterRobot(n);
+                outputFile << ans <<endl;
 
-                outputFile << IterRobot(n) <<endl;
-
-/*    Memorizatio  Version   */
-/* 
-                //Run the memoized omnidroid algorithm
-                vector<int> robotMemoArr;
-                for (int i = 0; i < n; i++)
-                    robotMemoArr.push_back(-1);
-
-                outputFile << IterRobot(n, robotMemoArr) << endl;
-*/
             }
         }
     }
